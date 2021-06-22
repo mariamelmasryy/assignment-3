@@ -19,15 +19,11 @@ This project's aim to implement a database-based application with logging servic
  
 ## Task1: 
 ### Extracting data
-- Using osmfilter & osmconvert form open street maps for extract and convert selected data by following these cmds: 
-   
+- Using osmfilter & osmconvert form open street maps for extract and convert selected data by useing only one command line:   
+* osmfilter egypt.o5m --keep="amenity=restaurant , amenity=cafe , amenity=fast_food" -o=Data.o5m && osmconvert64 test.o5m --csv="@id name amenity " --csv-headline -o=Dataa.csv
 
-* osmconvert64-0.8.8p egypt.latest.osm.pbf -o=egypt.osm
-* osmfilter egypt.o5m --keep="amenity=restaurant" -o=test.o5m *osmconvert64-0.8.8p test.o5m --csv="@id name " --csv-headline -* o=restaurant.csv
-* osmfilter egypt.o5m --keep="amenity=cafe" -o=test1.o5m
-* osmconvert64-0.8.8p test1.o5m --csv="@id name " --csv-headline -o=cafe.csv
-* osmfilter egypt.o5m --keep="amenity=fast_food" -o=test2.o5m
-* osmconvert64-0.8.8p test2.o5m --csv="@id name " --csv-headline -o=fastfood.csv
+- Using sed to delete unneeded data from csv
+* sed -i '/^$/d' data.csv
 
 ## Task2: 
 ### APIS
