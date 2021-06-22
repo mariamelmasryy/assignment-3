@@ -1,0 +1,98 @@
+version: '3'
+
+services:
+
+  backend:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - task
+    environment:
+      - HOST=0.0.0.0
+      - NODE_ENV=development
+      - PORT=3000
+      - POSTGRE_DB_HOST=postgres
+      - POSTGRES_DB_USER=root
+      - POSTGRES_DB_PASSWORD=1234
+      - POSTGRES_DB_PORT=5432
+      - POSTGRES_DB_NAME=task
+      - KAFKA_USERNAME=kafka:9092
+      - KAFKA_PASSWORD=
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres
+      - kafka
+    links:
+      - kafka
+      - postgres
+
+  postgres:
+    image: postgres
+    networks:
+      - task
+    volumes:
+      - postgresdata:/var/lib/postgres
+      - postgresconfig:/etc/postgres
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=root
+      - POSTGRES_DB=task
+    ports:
+      - 5432:5432
+
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: kafka-nodejs-example-zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - task
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka-nodejs-example-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+    ports:
+      - 9092:9092
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - task
+
+  consumer:
+    build:
+      context: ./docker/consumer
+      dockerfile: DockerFile
+    volumes:
+      - ./:/app
+    depends_on:
+      - zookeeper
+      - kafka
+    networks:
+      - task
+    environment:
+      - KAFKA_USERNAME=kafka:9092
+      - KAFKA_PASSWORD=
+
+networks:
+  task:
+
+volumes:
+  postgresdata:
+    driver: local
+  postgresconfig:
+    driver: local
