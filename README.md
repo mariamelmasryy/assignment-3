@@ -47,7 +47,8 @@ This project's aim to implement a database-based application with logging servic
 
 - Tool designed to make it easier to create, deploy, and run applications by using containers. Containers allow a developer to package up an application with all the parts it needs, such as libraries and other dependencies, and deploy it as one package.
 
-#Start Project by docker compose 
+#Start Project 
+`npm install`
 `docker-compose up`
 
 ## Contributing
